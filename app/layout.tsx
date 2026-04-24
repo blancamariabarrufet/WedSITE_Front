@@ -28,9 +28,12 @@ export const metadata: Metadata = {
   title: "tu dia de blanco",
   description: "Editorial wedding websites with an elegant digital concierge.",
   icons: {
-    icon: "/images/final-flavicon.png",
-    shortcut: "/images/final-flavicon.png",
-    apple: "/images/final-flavicon.png",
+    icon: [
+      { url: "/icon.png", type: "image/png" },
+      { url: "/images/final-flavicon.png", type: "image/png" },
+    ],
+    shortcut: "/icon.png",
+    apple: "/apple-icon.png",
   },
 };
 
