@@ -27,6 +27,11 @@ const workSans = Work_Sans({
 export const metadata: Metadata = {
   title: "tu dia de blanco",
   description: "Editorial wedding websites with an elegant digital concierge.",
+  icons: {
+    icon: "/favicon.jpeg",
+    shortcut: "/favicon.jpeg",
+    apple: "/favicon.jpeg",
+  },
 };
 
 export default function RootLayout({
