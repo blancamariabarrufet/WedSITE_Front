@@ -1,15 +1,16 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
+import { ChatMarkdown } from "@/components/ChatMarkdown";
 import { Footer } from "@/components/Footer";
 import { MobileNavLinks, Nav } from "@/components/Nav";
 import { OrderForm } from "@/components/OrderForm";
 import { Button } from "@/components/ui/Button";
 import { VellumOverlay } from "@/components/ui/VellumOverlay";
 import { CheckIcon, SendIcon, SparklesIcon, SpinnerIcon } from "@/components/ui/icons";
-import { sendDemoChat, type DemoChatContext, type DemoChatMessage } from "@/lib/chat-demo";
+import { streamDemoChat, type DemoChatContext, type DemoChatMessage } from "@/lib/chat-demo";
 import { useLanguage, type Locale } from "@/lib/i18n";
 
 type HostBrief = {
@@ -29,6 +30,7 @@ type ChatMessage = {
   id: number;
   role: "host" | "guest";
   text: string;
+  streaming?: boolean;
 };
 
 const initialBrief: HostBrief = {
@@ -203,14 +205,17 @@ function buildDemoContext(brief: HostBrief): DemoChatContext {
 }
 
 function toDemoHistory(messages: ChatMessage[]): DemoChatMessage[] {
-  return messages.map((message) => ({
-    role: message.role === "guest" ? "user" : "assistant",
-    content: message.text,
-  }));
+  return messages
+    .filter((message) => !message.streaming)
+    .map((message) => ({
+      role: message.role === "guest" ? "user" : "assistant",
+      content: message.text,
+    }));
 }
 
 export function InvisibleHostPage() {
   const { locale, t } = useLanguage();
+  const chatAbortControllerRef = useRef<AbortController | null>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [orderOpen, setOrderOpen] = useState(false);
   const [orderInitialStep, setOrderInitialStep] = useState(1);
@@ -253,6 +258,12 @@ export function InvisibleHostPage() {
   const generationDisabled = hasHydrated ? !canGenerate || isSaving : false;
   const chatDisabled = hasHydrated ? !generated || isChatLoading : false;
   const sendDisabled = hasHydrated ? !generated || isChatLoading || !chatInput.trim() : false;
+
+  useEffect(() => {
+    return () => {
+      chatAbortControllerRef.current?.abort();
+    };
+  }, []);
 
   function openOrder(step = 1) {
     setMobileNavOpen(false);
@@ -327,40 +338,75 @@ export function InvisibleHostPage() {
       ...messages,
       { id: messages.length + 1, role: "guest", text: trimmedQuestion },
     ];
+    const assistantId = nextMessages.length + 1;
+    const controller = new AbortController();
+    let streamedText = "";
 
-    setMessages(nextMessages);
+    chatAbortControllerRef.current?.abort();
+    chatAbortControllerRef.current = controller;
+    setMessages([
+      ...nextMessages,
+      {
+        id: assistantId,
+        role: "host",
+        text: "",
+        streaming: true,
+      },
+    ]);
     setChatInput("");
     setIsChatLoading(true);
 
     try {
-      const reply = await sendDemoChat({
+      const assistantText = await streamDemoChat({
         message: trimmedQuestion,
         history: toDemoHistory(nextMessages),
         demoContext: buildDemoContext(activeBrief),
+        signal: controller.signal,
+        onDelta: (delta) => {
+          streamedText += delta;
+          setMessages((current) =>
+            current.map((message) =>
+              message.id === assistantId
+                ? {
+                    ...message,
+                    text: message.text + delta,
+                    streaming: true,
+                  }
+                : message,
+            ),
+          );
+        },
       });
+      const finalText = assistantText || buildAnswer(trimmedQuestion, activeBrief, locale, t);
 
-      setMessages((current) => [
-        ...current,
-        {
-          id: current.length + 1,
-          role: "host",
-          text: reply || buildAnswer(trimmedQuestion, activeBrief, locale, t),
-        },
-      ]);
+      setMessages((current) =>
+        current.map((message) =>
+          message.id === assistantId
+            ? { ...message, text: finalText, streaming: false }
+            : message,
+        ),
+      );
     } catch {
-      setMessages((current) => [
-        ...current,
-        {
-          id: current.length + 1,
-          role: "host",
-          text:
-            locale === "es"
-              ? "No he podido conectar con el asistente ahora mismo. Intentalo de nuevo en un momento."
-              : "I couldn't reach the assistant just now. Please try again in a moment.",
-        },
-      ]);
+      const fallbackText =
+        locale === "es"
+          ? "No he podido conectar con el asistente ahora mismo. Intentalo de nuevo en un momento."
+          : "I couldn't reach the assistant just now. Please try again in a moment.";
+      const finalText = controller.signal.aborted && streamedText
+        ? `${streamedText}\n\n${locale === "es" ? "(conexion perdida)" : "(connection lost)"}`
+        : fallbackText;
+
+      setMessages((current) =>
+        current.map((message) =>
+          message.id === assistantId
+            ? { ...message, text: finalText, streaming: false }
+            : message,
+        ),
+      );
     } finally {
-      setIsChatLoading(false);
+      if (chatAbortControllerRef.current === controller) {
+        chatAbortControllerRef.current = null;
+        setIsChatLoading(false);
+      }
     }
   }
 
@@ -572,11 +618,11 @@ export function InvisibleHostPage() {
                       message.role === "guest" ? "guest ml-auto" : "bot"
                     }`}
                   >
-                    {message.text}
+                    <ChatMarkdown streaming={message.streaming}>{message.text}</ChatMarkdown>
                   </div>
                 ))
               )}
-              {isChatLoading && (
+              {isChatLoading && !messages.at(-1)?.streaming && (
                 <div className="chat-bubble bot inline-flex items-center gap-2">
                   <SpinnerIcon className="h-4 w-4" />
                   <span>{locale === "es" ? "Pensando..." : "Thinking..."}</span>

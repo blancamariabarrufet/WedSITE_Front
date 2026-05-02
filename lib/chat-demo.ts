@@ -34,15 +34,29 @@ function cleanHistory(history: DemoChatMessage[]) {
     .slice(-CHAT_HISTORY_LIMIT);
 }
 
-export async function sendDemoChat({
-  message,
-  history,
-  demoContext,
-}: {
+type StreamDemoChatInput = {
   message: string;
   history: DemoChatMessage[];
   demoContext: DemoChatContext;
-}) {
+  signal: AbortSignal;
+  onDelta: (delta: string) => void;
+};
+
+function parseDataLine(eventText: string) {
+  return eventText
+    .split("\n")
+    .find((line) => line.startsWith("data: "))
+    ?.slice(6)
+    .trim();
+}
+
+export async function streamDemoChat({
+  message,
+  history,
+  demoContext,
+  signal,
+  onDelta,
+}: StreamDemoChatInput) {
   const cleanMessage = cleanText(message);
 
   if (!CHATBOT_API_BASE_URL) {
@@ -57,6 +71,7 @@ export async function sendDemoChat({
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "omit",
+    signal,
     body: JSON.stringify({
       message: cleanMessage,
       history: cleanHistory(history),
@@ -70,6 +85,67 @@ export async function sendDemoChat({
     throw new Error(`Chat API ${response.status}`);
   }
 
-  const data = (await response.json()) as { reply?: string };
-  return cleanText(data.reply ?? "");
+  if (!response.body) {
+    throw new Error("Chat API response body is empty");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let fullReply = "";
+
+  function handleEvent(eventText: string) {
+    const payload = parseDataLine(eventText);
+    if (!payload) {
+      return false;
+    }
+
+    if (payload === "[DONE]") {
+      return true;
+    }
+
+    try {
+      const event = JSON.parse(payload) as { delta?: string; error?: string };
+
+      if (event.error) {
+        console.error("Demo chat stream error", event.error);
+        throw new Error(event.error);
+      }
+
+      if (event.delta) {
+        fullReply += event.delta;
+        onDelta(event.delta);
+      }
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        return false;
+      }
+      throw error;
+    }
+
+    return false;
+  }
+
+  while (true) {
+    const { value, done } = await reader.read();
+
+    if (done) {
+      if (buffer) {
+        handleEvent(buffer);
+      }
+      break;
+    }
+
+    buffer += decoder.decode(value, { stream: true });
+    const events = buffer.split("\n\n");
+    buffer = events.pop() ?? "";
+
+    for (const eventText of events) {
+      if (handleEvent(eventText)) {
+        return fullReply;
+      }
+    }
+  }
+
+  return fullReply;
 }

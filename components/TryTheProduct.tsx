@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+import { ChatMarkdown } from "@/components/ChatMarkdown";
 import { Button } from "@/components/ui/Button";
 import { VellumOverlay } from "@/components/ui/VellumOverlay";
 import { ArrowRightIcon, SendIcon, SpinnerIcon } from "@/components/ui/icons";
-import { sendDemoChat, type DemoChatContext, type DemoChatMessage } from "@/lib/chat-demo";
+import { streamDemoChat, type DemoChatContext, type DemoChatMessage } from "@/lib/chat-demo";
 
 type DemoFormState = {
   partnerOne: string;
@@ -20,6 +21,7 @@ type DemoFormState = {
 type Message = {
   role: "assistant" | "user";
   content: string;
+  streaming?: boolean;
 };
 
 const initialForm: DemoFormState = {
@@ -74,13 +76,16 @@ function buildDemoContext(form: DemoFormState): DemoChatContext {
 }
 
 function toDemoHistory(messages: Message[]): DemoChatMessage[] {
-  return messages.map((message) => ({
-    role: message.role,
-    content: message.content,
-  }));
+  return messages
+    .filter((message) => !message.streaming)
+    .map((message) => ({
+      role: message.role,
+      content: message.content,
+    }));
 }
 
 export function TryTheProduct({ onOpenOrder }: { onOpenOrder: () => void }) {
+  const chatAbortControllerRef = useRef<AbortController | null>(null);
   const [form, setForm] = useState<DemoFormState>(initialForm);
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -105,6 +110,12 @@ export function TryTheProduct({ onOpenOrder }: { onOpenOrder: () => void }) {
     return () => window.clearTimeout(timer);
   }, [form, isLoading]);
 
+  useEffect(() => {
+    return () => {
+      chatAbortControllerRef.current?.abort();
+    };
+  }, []);
+
   function updateField(field: keyof DemoFormState, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
   }
@@ -128,40 +139,91 @@ export function TryTheProduct({ onOpenOrder }: { onOpenOrder: () => void }) {
     }
 
     const nextUserMessage = draftMessage.trim();
+    const controller = new AbortController();
     const nextMessages: Message[] = [
       ...messages,
       { role: "user", content: nextUserMessage },
     ];
+    let streamedContent = "";
 
-    setMessages(nextMessages);
+    chatAbortControllerRef.current?.abort();
+    chatAbortControllerRef.current = controller;
+    setMessages([
+      ...nextMessages,
+      {
+        role: "assistant",
+        content: "",
+        streaming: true,
+      },
+    ]);
     setDraftMessage("");
     setIsChatLoading(true);
 
     try {
-      const reply = await sendDemoChat({
+      const assistantContent = await streamDemoChat({
         message: nextUserMessage,
         history: toDemoHistory(nextMessages),
         demoContext: buildDemoContext(form),
-      });
+        signal: controller.signal,
+        onDelta: (delta) => {
+          streamedContent += delta;
+          setMessages((current) => {
+            const next = [...current];
+            const lastAssistantIndex = next.findLastIndex((message) => message.role === "assistant");
 
-      setMessages((current) => [
-        ...current,
-        {
-          role: "assistant",
-          content: reply || buildReply(nextUserMessage, form),
+            if (lastAssistantIndex >= 0) {
+              next[lastAssistantIndex] = {
+                ...next[lastAssistantIndex],
+                content: next[lastAssistantIndex].content + delta,
+                streaming: true,
+              };
+            }
+
+            return next;
+          });
         },
-      ]);
+      });
+      const finalContent = assistantContent || buildReply(nextUserMessage, form);
+
+      setMessages((current) => {
+        const next = [...current];
+        const lastAssistantIndex = next.findLastIndex((message) => message.role === "assistant");
+
+        if (lastAssistantIndex >= 0) {
+          next[lastAssistantIndex] = {
+            ...next[lastAssistantIndex],
+            content: finalContent,
+            streaming: false,
+          };
+        }
+
+        return next;
+      });
     } catch {
-      setMessages((current) => [
-        ...current,
-        {
-          role: "assistant",
-          content:
-            "I couldn't reach the assistant just now. Please try again in a moment.",
-        },
-      ]);
+      const fallbackContent = "I couldn't reach the assistant just now. Please try again in a moment.";
+      const finalContent = controller.signal.aborted && streamedContent
+        ? `${streamedContent}\n\n(connection lost)`
+        : fallbackContent;
+
+      setMessages((current) => {
+        const next = [...current];
+        const lastAssistantIndex = next.findLastIndex((message) => message.role === "assistant");
+
+        if (lastAssistantIndex >= 0) {
+          next[lastAssistantIndex] = {
+            ...next[lastAssistantIndex],
+            content: finalContent,
+            streaming: false,
+          };
+        }
+
+        return next;
+      });
     } finally {
-      setIsChatLoading(false);
+      if (chatAbortControllerRef.current === controller) {
+        chatAbortControllerRef.current = null;
+        setIsChatLoading(false);
+      }
     }
   }
 
@@ -257,6 +319,7 @@ export function TryTheProduct({ onOpenOrder }: { onOpenOrder: () => void }) {
       <VellumOverlay
         isOpen={overlayOpen}
         onClose={() => {
+          chatAbortControllerRef.current?.abort();
           setOverlayOpen(false);
           setIsLoading(false);
           setIsChatLoading(false);
@@ -288,10 +351,10 @@ export function TryTheProduct({ onOpenOrder }: { onOpenOrder: () => void }) {
                         key={`${message.role}-${index}`}
                         className={`chat-bubble ${message.role === "assistant" ? "bot" : "guest"} ${message.role === "user" ? "ml-auto" : ""}`}
                       >
-                        {message.content}
+                        <ChatMarkdown streaming={message.streaming}>{message.content}</ChatMarkdown>
                       </div>
                     ))}
-                    {isChatLoading && (
+                    {isChatLoading && !messages.at(-1)?.streaming && (
                       <div className="chat-bubble bot inline-flex items-center gap-2">
                         <SpinnerIcon className="h-4 w-4" />
                         <span>Thinking...</span>
@@ -329,6 +392,7 @@ export function TryTheProduct({ onOpenOrder }: { onOpenOrder: () => void }) {
                   </p>
                   <Button
                     onClick={() => {
+                      chatAbortControllerRef.current?.abort();
                       setOverlayOpen(false);
                       onOpenOrder();
                     }}
