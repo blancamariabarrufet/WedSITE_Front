@@ -35,13 +35,17 @@ type PricingCopy = {
   shared: string;
   footerNote: string;
   plans: PricingPlan[];
+  offerTitle: string;
+  offerBody: string;
+  offerEmail: string;
+  offerCta: string;
 };
 
 const pricingCopy = {
   en: {
     eyebrow: "PRICING",
-    heroTitle: "The Digital Heirloom, priced once.",
-    heroSub: "A fully personalised wedding website, guest tools, hosting, and The Invisible Host in every plan.",
+    heroTitle: "A personalised offer for your wedding website.",
+    heroSub: "A fully personalised wedding website, guest tools, hosting, and The Invisible Host shaped around your celebration.",
     promiseTitleStart: "Your website is built ",
     promiseTitleEmphasis: "with you",
     promiseTitleEnd: ", not for a stranger.",
@@ -54,9 +58,14 @@ const pricingCopy = {
       "We publish it and stay available until your day",
     ],
     aiBanner:
-      "The Invisible Host is included in every plan. Your AI concierge answers guests' questions so you never have to.",
+      "The Invisible Host can be included in your proposal. Your AI concierge answers guests' questions so you never have to.",
     shared: "One-time payment · 24-month hosting · 14-day money-back guarantee",
     footerNote: "All plans · One-time payment · 24-month hosting · 14-day money-back guarantee",
+    offerTitle: "Contact us to get a personalised offer",
+    offerBody:
+      "Tell us what you have in mind and we will prepare a tailored proposal for your wedding website and guest tools.",
+    offerEmail: "contacto@tudiadeblanco.com",
+    offerCta: "Start your request",
     plans: [
       {
         id: "heirloom",
@@ -150,8 +159,8 @@ const pricingCopy = {
   },
   es: {
     eyebrow: "PRECIOS",
-    heroTitle: "La Herencia Digital, con pago unico.",
-    heroSub: "Una web de boda personalizada, herramientas para invitados, hosting y The Invisible Host en todos los planes.",
+    heroTitle: "Una oferta personalizada para vuestra web de boda.",
+    heroSub: "Una web de boda personalizada, herramientas para invitados, hosting y The Invisible Host pensados alrededor de vuestra celebracion.",
     promiseTitleStart: "Tu web se crea ",
     promiseTitleEmphasis: "contigo",
     promiseTitleEnd: ", no para alguien cualquiera.",
@@ -164,9 +173,14 @@ const pricingCopy = {
       "La publicamos y seguimos disponibles hasta vuestro dia",
     ],
     aiBanner:
-      "The Invisible Host esta incluido en todos los planes. Vuestro concierge con IA responde las preguntas de los invitados para que no tengais que hacerlo vosotros.",
+      "The Invisible Host puede incluirse en vuestra propuesta. Vuestro concierge con IA responde las preguntas de los invitados para que no tengais que hacerlo vosotros.",
     shared: "Pago unico · 24 meses de hosting · Garantia de devolucion de 14 dias",
     footerNote: "Todos los planes · Pago unico · 24 meses de hosting · Garantia de devolucion de 14 dias",
+    offerTitle: "Contacta con nosotros para recibir una oferta personalizada",
+    offerBody:
+      "Cuéntanos qué tenéis en mente y prepararemos una propuesta a medida para vuestra web y herramientas de invitados.",
+    offerEmail: "contacto@tudiadeblanco.com",
+    offerCta: "Empezar solicitud",
     plans: [
       {
         id: "heirloom",
@@ -300,7 +314,23 @@ export default function PricingPage() {
         <p>{copy.aiBanner}</p>
       </aside>
 
-      <section className="pricing-plans" aria-label={locale === "en" ? "Pricing plans" : "Planes y precios"}>
+      <section className="pricing-plans" aria-label={locale === "en" ? "Personalised offer" : "Oferta personalizada"}>
+        <div className="pricing-offer">
+          <div>
+            <p className="pricing-offer__kicker">{locale === "en" ? "Personalised proposal" : "Propuesta a medida"}</p>
+            <h2>{copy.offerTitle}</h2>
+            <p>{copy.offerBody}</p>
+          </div>
+          <div className="pricing-offer__actions">
+            <Link href="/register" className="pricing-offer__cta">
+              {copy.offerCta}
+            </Link>
+            <a href={`mailto:${copy.offerEmail}`} className="pricing-offer__email">
+              {copy.offerEmail}
+            </a>
+          </div>
+        </div>
+        {/*
         <p className="pricing-shared">{copy.shared}</p>
         <div className="pricing-grid">
           {copy.plans.map((plan) => (
@@ -333,6 +363,7 @@ export default function PricingPage() {
           ))}
         </div>
         <p className="pricing-footer-note">{copy.footerNote}</p>
+        */}
       </section>
 
       <Footer />

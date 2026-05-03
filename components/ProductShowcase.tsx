@@ -269,6 +269,10 @@ const pageCopy = {
     demo: "Open live demo",
     demoNote: "Contact us and we will prepare a free personalized demo website in your style. The demo is only a preview and has no cost.",
     liveLabel: "Live connected demo",
+    differenceEyebrow: "WHY IT FEELS DIFFERENT",
+    differenceTitle: "One place for the page, the guests, and the details.",
+    differenceBody:
+      "Most wedding tools split the experience between a public website, spreadsheets, messages, and supplier notes. Tu dia de blanco keeps the visible site and the preparation work connected, so every update is easier to manage.",
     closingTitle: "A website your guests understand, with a panel you can actually use.",
     closingSub: "Start with the essentials, then add the services that fit your wedding.",
     closingSecondary: "Try the AI",
@@ -281,11 +285,46 @@ const pageCopy = {
     demo: "Abrir demo en vivo",
     demoNote: "Contactanos y prepararemos una demo web gratuita con tu estilo. La demo es solo una vista previa, no tiene coste.",
     liveLabel: "Demo en vivo conectada",
+    differenceEyebrow: "POR QUE ES DIFERENTE",
+    differenceTitle: "Una sola experiencia para la web, los invitados y los detalles.",
+    differenceBody:
+      "La preparacion de una boda suele acabar repartida entre una web, hojas de calculo, mensajes y notas para proveedores. Tu dia de blanco conecta la parte visible con la gestion privada para que cada cambio sea mas facil.",
     closingTitle: "Una web que tus invitados entienden, con un panel que puedes usar de verdad.",
     closingSub: "Empieza con lo esencial y anade los servicios que encajan con tu boda.",
     closingSecondary: "Probar la IA",
   },
 } satisfies Record<Locale, Record<string, string>>;
+
+const differencePoints = {
+  en: [
+    {
+      title: "Less back-and-forth",
+      body: "Guest information, RSVP changes, notes and updates live in one calm workflow.",
+    },
+    {
+      title: "Designed around your wedding",
+      body: "The site starts from your story, tone and practical needs, not from a generic template.",
+    },
+    {
+      title: "Preparation feels lighter",
+      body: "Guests get clear answers and you keep the important decisions visible until the day arrives.",
+    },
+  ],
+  es: [
+    {
+      title: "Menos idas y venidas",
+      body: "Informacion de invitados, cambios de RSVP, notas y actualizaciones viven en un flujo sereno.",
+    },
+    {
+      title: "Disenada alrededor de vuestra boda",
+      body: "La web parte de vuestra historia, tono y necesidades reales, no de una plantilla generica.",
+    },
+    {
+      title: "La preparacion se siente mas ligera",
+      body: "Los invitados reciben respuestas claras y vosotros manteneis visibles las decisiones importantes.",
+    },
+  ],
+} satisfies Record<Locale, { title: string; body: string }[]>;
 
 type BrowserFrameProps = {
   route: string;
@@ -466,7 +505,33 @@ export function ProductShowcase({ onOpenOrder }: ProductShowcaseProps) {
         </div>
       </section>
 
-      <ProductServicesCarousel />
+      <section className="product-difference" aria-labelledby="product-difference-title">
+        <div className="product-difference__intro">
+          <p className="eyebrow">{copy.differenceEyebrow}</p>
+          <h2 id="product-difference-title">{copy.differenceTitle}</h2>
+          <p>{copy.differenceBody}</p>
+        </div>
+        <div className="product-difference__thread" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+        <div className="product-difference__list">
+          {differencePoints[locale].map((point, index) => (
+            <article
+              key={point.title}
+              className="product-difference__item"
+              style={{ "--difference-index": index } as CSSProperties}
+            >
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <h3>{point.title}</h3>
+                <p>{point.body}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <section className="product-closing" aria-label={copy.closingTitle}>
         <div className="product-closing__inner">

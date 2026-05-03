@@ -30,8 +30,8 @@ NOTION_SOLICITATION_DATA_SOURCE_ID=886c3c75-4622-493e-83a7-d3af9a551edf
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 RESEND_API_KEY=re_your_resend_api_key
-RESEND_FROM_EMAIL="Tu dia de blanco <hello@your-domain.com>"
-RESEND_REPLY_TO=hello@your-domain.com
+RESEND_FROM_EMAIL="Tu dia de blanco <hello@tudiadeblanco.com>"
+RESEND_REPLY_TO=contacto@tudiadeblanco.com
 RESEND_INTERNAL_EMAIL=contacto@tudiadeblanco.com
 ```
 

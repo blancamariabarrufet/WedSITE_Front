@@ -37,7 +37,8 @@ type SendChatbotConfirmationInput = {
 };
 
 const RESEND_API_URL = "https://api.resend.com";
-const DEFAULT_FROM = "Tu dia de blanco <onboarding@resend.dev>";
+const DEFAULT_FROM = "Tu dia de blanco <hello@tudiadeblanco.com>";
+const DEFAULT_REPLY_TO = "contacto@tudiadeblanco.com";
 const DEFAULT_INTERNAL_EMAIL = "contacto@tudiadeblanco.com";
 
 export const resendTemplateDefinitions = templates;
@@ -52,7 +53,7 @@ function getEmailSettings() {
   return {
     apiKey,
     from: process.env.RESEND_FROM_EMAIL || DEFAULT_FROM,
-    replyTo: process.env.RESEND_REPLY_TO,
+    replyTo: process.env.RESEND_REPLY_TO || DEFAULT_REPLY_TO,
     internalEmail: process.env.RESEND_INTERNAL_EMAIL || DEFAULT_INTERNAL_EMAIL,
   };
 }

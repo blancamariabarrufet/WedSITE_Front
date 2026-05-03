@@ -11,7 +11,6 @@ export async function GET(request: Request) {
   const next = sanitizeNextPath(searchParams.get("next"));
   const origin = getSiteUrl();
   const lang = searchParams.get("lang") === "en" ? "en" : "es";
-  const plan = sanitizePlan(searchParams.get("plan"));
   const localized = (path: string) => `${origin}${path}${path.includes("?") ? "&" : "?"}lang=${lang}`;
 
   if (code) {
@@ -40,11 +39,11 @@ export async function GET(request: Request) {
         if (user?.is_active && user.access_status === "approved") {
           return NextResponse.redirect(localized("/login?status=existing"));
         }
-        return NextResponse.redirect(localized(`/register?google=1&plan=${plan}`));
+        return NextResponse.redirect(localized("/register?google=1"));
       }
 
       if (!user) {
-        return NextResponse.redirect(localized(`/register?google=1&plan=${plan}`));
+        return NextResponse.redirect(localized("/register?google=1"));
       }
 
       if (!user.is_active || user.access_status !== "approved") {
@@ -74,12 +73,4 @@ function sanitizeNextPath(path: string | null) {
   }
 
   return path;
-}
-
-function sanitizePlan(plan: string | null) {
-  if (plan === "heirloom" || plan === "legacy") {
-    return plan;
-  }
-
-  return "estate";
 }

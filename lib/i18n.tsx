@@ -96,14 +96,26 @@ const translations: Record<Locale, Record<string, string>> = {
     "hero.attribution": "Vogue Weddings",
 
     // Features
-    "features.heading": "Modern Sophistication",
-    "features.sub":
-      "We combine timeless aesthetics with the convenience of tomorrow.",
+    "features.heading": "Two experiences, one wedding.",
+    "features.sub": "",
+    "features.experienceLabel": "Two experiences: the guest and the couple",
+    "features.coupleKicker": "For the couple",
+    "features.coupleTitle": "Preparation without the scattered tools.",
+    "features.couplePoint1": "Private manager panel for the details behind the day",
+    "features.couplePoint2": "RSVPs, guest list, dietary notes and seating in one place",
+    "features.couplePoint3": "News, updates and practical changes published calmly",
+    "features.couplePoint4": "A wedding website designed from your story, not a template",
+    "features.guestKicker": "For the guests",
+    "features.guestTitle": "A clear experience from invitation to arrival.",
+    "features.guestPoint1": "Mobile-first wedding information that is easy to scan",
+    "features.guestPoint2": "RSVP in a few steps with the details you need collected",
+    "features.guestPoint3": "Schedule, venues, dress code and directions in one place",
+    "features.guestPoint4": "The Invisible Host answers questions with your approved details",
     "features.hostLabel": "The Invisible Host",
     "features.aiTitle": "Personal assistant",
     "features.aiBody":
       "A personal assistant for your guests, trained on your wedding details. Whether they need directions, dress code advice, or registry links, it responds instantly with a warm, human tone.",
-    "features.aiLink": "Try your personalized assistant.",
+    "features.aiLink": "Try your personalized assistant and see the magic.",
     "features.designTitle": "Bespoke Design",
     "features.designBody":
       "Curated typography and layouts that mirror high-end stationery. No templates, just digital craft.",
@@ -344,14 +356,26 @@ const translations: Record<Locale, Record<string, string>> = {
     "hero.attribution": "Vogue Weddings",
 
     // Features
-    "features.heading": "Sofisticaci\u00F3n Moderna",
-    "features.sub":
-      "Combinamos est\u00E9tica atemporal con la comodidad del ma\u00F1ana.",
+    "features.heading": "Dos experiencias, una misma boda.",
+    "features.sub": "",
+    "features.experienceLabel": "Dos experiencias: invitados y pareja",
+    "features.coupleKicker": "Para la pareja",
+    "features.coupleTitle": "Preparacion sin herramientas dispersas.",
+    "features.couplePoint1": "Panel privado para gestionar los detalles del dia",
+    "features.couplePoint2": "RSVPs, invitados, dietas y mesas en un solo lugar",
+    "features.couplePoint3": "Noticias, cambios y actualizaciones publicados con calma",
+    "features.couplePoint4": "Una web disenada desde vuestra historia, no desde una plantilla",
+    "features.guestKicker": "Para los invitados",
+    "features.guestTitle": "Una experiencia clara desde la invitacion hasta la llegada.",
+    "features.guestPoint1": "Informacion de boda mobile-first y facil de consultar",
+    "features.guestPoint2": "RSVP en pocos pasos con los datos necesarios recogidos",
+    "features.guestPoint3": "Horario, espacios, dress code e indicaciones en un solo lugar",
+    "features.guestPoint4": "The Invisible Host responde preguntas con los detalles aprobados",
     "features.hostLabel": "El Anfitri\u00F3n Invisible",
     "features.aiTitle": "Asistente Personal",
     "features.aiBody":
       "Un asistente personal para vuestros invitados, entrenado con los detalles de vuestra boda. Si necesitan indicaciones, dress code o enlaces de regalo, responde al instante con un tono cercano y humano.",
-    "features.aiLink": "Prueba tu asistente personalizado.",
+    "features.aiLink": "Prueba tu asistente personalizado y mira la magia.",
     "features.designTitle": "Diseño a Medida",
     "features.designBody":
       "Tipografía y maquetación seleccionadas que reflejan papelería de alta gama. Sin plantillas, solo artesanía digital.",

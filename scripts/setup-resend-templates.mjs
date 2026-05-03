@@ -1,7 +1,7 @@
 import templates from "../lib/resendTemplates.json" with { type: "json" };
 
 const apiKey = process.env.RESEND_API_KEY;
-const from = process.env.RESEND_FROM_EMAIL || "Tu dia de blanco <onboarding@resend.dev>";
+const from = process.env.RESEND_FROM_EMAIL || "Tu dia de blanco <hello@tudiadeblanco.com>";
 const baseUrl = "https://api.resend.com";
 
 if (!apiKey) {

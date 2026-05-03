@@ -10,7 +10,7 @@ import { Footer } from "@/components/Footer";
 import { MobileNavLinks, Nav } from "@/components/Nav";
 import { VellumOverlay } from "@/components/ui/VellumOverlay";
 import { createClient } from "@/lib/supabase/client";
-import { ALL_FEATURES, type Feature } from "@/lib/features";
+import { type Feature } from "@/lib/features";
 import { useLanguage, type Locale } from "@/lib/i18n";
 import {
   REGISTRATION_DESIGN_QUESTIONS,
@@ -23,9 +23,9 @@ import {
 } from "@/lib/register-design-questions";
 import { buildSiteUrl } from "@/lib/site-url";
 
-type PlanId = "heirloom" | "estate" | "legacy";
 type RegisterStep = "details" | "design";
 
+/*
 type PlanCopy = {
   id: PlanId;
   name: string;
@@ -36,9 +36,11 @@ type PlanCopy = {
   includes: Record<Locale, string[]>;
   features: Feature[];
 };
+*/
 
-const planFeaturesWithoutDomain: Feature[] = ALL_FEATURES.filter((feature) => feature !== "domain");
+const defaultRegistrationFeatures: Feature[] = [];
 
+/*
 const planOptions: PlanCopy[] = [
   {
     id: "heirloom",
@@ -87,13 +89,14 @@ const planOptions: PlanCopy[] = [
     features: planFeaturesWithoutDomain,
   },
 ];
+*/
 
 const copy = {
   en: {
     eyebrow: "START YOUR STORY",
     title: "Tell us where the celebration begins.",
     subtitle:
-      "Choose a plan, leave the essential details, and we will prepare the first version around your story.",
+      "Leave the essential details and we will prepare a personalised offer around your story.",
     googleMode: "Complete your Google registration",
     requestMode: "Create your wedding website request",
     username: "Username",
@@ -130,7 +133,7 @@ const copy = {
     back: "Back to details",
     designRequiredError: "Answer each design question, or choose for me.",
     imageEmailHint:
-      "To send us your images — hero or any others — email them to hello@thedigitalheirloom.com",
+      "To send us your images, hero or any others, email them to hello@tudiadeblanco.com",
     selected: "Selected",
     submit: "Send request",
     sending: "Sending request...",
@@ -156,7 +159,7 @@ const copy = {
     eyebrow: "COMIENZA TU HISTORIA",
     title: "Cuéntanos dónde empieza la celebración.",
     subtitle:
-      "Elige un plan, deja los detalles esenciales y prepararemos una primera versión alrededor de vuestra historia.",
+      "Deja los detalles esenciales y prepararemos una oferta personalizada alrededor de vuestra historia.",
     googleMode: "Completa tu registro con Google",
     requestMode: "Crea la solicitud de vuestra web",
     username: "Usuario",
@@ -193,7 +196,7 @@ const copy = {
     back: "Volver a los detalles",
     designRequiredError: "Responde cada pregunta de diseno, o elige que lo hagamos nosotros.",
     imageEmailHint:
-      "Para enviarnos vuestras imagenes, hero o cualquier otra, mandadlas a hello@thedigitalheirloom.com",
+      "Para enviarnos vuestras imagenes, hero o cualquier otra, mandadlas a hello@tudiadeblanco.com",
     selected: "Seleccionado",
     submit: "Enviar solicitud",
     sending: "Enviando solicitud...",
@@ -217,14 +220,6 @@ const copy = {
   },
 } satisfies Record<Locale, Record<string, string>>;
 
-function normalizePlan(value: string | null): PlanId {
-  return value === "heirloom" || value === "legacy" ? value : "estate";
-}
-
-function planFeatures(planId: PlanId) {
-  return planOptions.find((plan) => plan.id === planId)?.features ?? planFeaturesWithoutDomain;
-}
-
 export default function RegisterPage() {
   return (
     <Suspense fallback={<main className="register-page" />}>
@@ -239,11 +234,9 @@ function RegisterPageContent() {
   const { locale } = useLanguage();
   const supabase = useMemo(() => createClient(), []);
   const text = copy[locale];
-  const urlPlan = normalizePlan(searchParams.get("plan"));
   const googleMode = searchParams.get("google") === "1";
 
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<PlanId>(urlPlan);
   const [step, setStep] = useState<RegisterStep>("details");
   const [form, setForm] = useState({
     username: "",
@@ -262,7 +255,7 @@ function RegisterPageContent() {
   const [designAnswers, setDesignAnswers] = useState<RegistrationDesignAnswers>(() =>
     createEmptyRegistrationDesignAnswers()
   );
-  const [features, setFeatures] = useState<Feature[]>(planFeatures(urlPlan));
+  const [features] = useState<Feature[]>(defaultRegistrationFeatures);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -286,11 +279,6 @@ function RegisterPageContent() {
 
   function update(field: string, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
-  }
-
-  function choosePlan(planId: PlanId) {
-    setSelectedPlan(planId);
-    setFeatures(planFeatures(planId));
   }
 
   function validateDetailsStep() {
@@ -359,7 +347,7 @@ function RegisterPageContent() {
     const { error: googleError } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: buildSiteUrl(`/auth/callback?mode=register&lang=${locale}&plan=${selectedPlan}`),
+        redirectTo: buildSiteUrl(`/auth/callback?mode=register&lang=${locale}`),
       },
     });
     if (googleError) {
@@ -413,7 +401,6 @@ function RegisterPageContent() {
       physicalInvitations: form.physicalInvitations === "true",
       language: locale,
       features,
-      selectedPlan,
       designAnswers,
       googleAccessToken,
     };
@@ -456,7 +443,7 @@ function RegisterPageContent() {
   return (
     <main className="register-page">
       <Nav
-        onOpenOrder={() => router.push(`/register?plan=${selectedPlan}&lang=${locale}`)}
+        onOpenOrder={() => router.push(`/register?lang=${locale}`)}
         onOpenMobileNav={() => setMobileNavOpen(true)}
       />
 
@@ -653,6 +640,7 @@ function RegisterPageContent() {
                 </div>
               </div>
 
+              {/*
               <section className="register-plan-section" aria-labelledby="register-plan-title">
                 <div>
                   <h2 id="register-plan-title">{text.planLabel}</h2>
@@ -693,6 +681,7 @@ function RegisterPageContent() {
                   })}
                 </div>
               </section>
+              */}
             </>
           ) : (
             <section className="register-design-step" aria-labelledby="register-design-title">
@@ -814,7 +803,7 @@ function RegisterPageContent() {
       >
         <MobileNavLinks
           onNavigate={() => setMobileNavOpen(false)}
-          onOpenOrder={() => router.push(`/register?plan=${selectedPlan}&lang=${locale}`)}
+          onOpenOrder={() => router.push(`/register?lang=${locale}`)}
         />
       </VellumOverlay>
     </main>
