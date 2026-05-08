@@ -10,7 +10,6 @@ import { MobileNavLinks, Nav } from "@/components/Nav";
 import { OrderForm } from "@/components/OrderForm";
 import { Process } from "@/components/Process";
 import { ProductServicesCarousel } from "@/components/ProductShowcase";
-import { ScrollFrameStory } from "@/components/ScrollFrameStory";
 import { VellumOverlay } from "@/components/ui/VellumOverlay";
 
 export default function Home() {
@@ -34,7 +33,6 @@ export default function Home() {
       <Features />
       <ProductServicesCarousel variant="home" />
       <Process />
-      <ScrollFrameStory />
       <ClosingCTA onOpenOrder={() => openOrder()} />
       <Footer />
 
