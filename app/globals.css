@@ -1054,7 +1054,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 14px;
   margin-top: 32px;
 }

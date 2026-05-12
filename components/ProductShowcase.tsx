@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/Button";
 import { useLanguage, type Locale } from "@/lib/i18n";
 
 const DEMO_ORIGIN = "https://demo.tudiadeblanco.com";
+const MEETING_URL = "https://calendar.app.google/76LAvzURpLJiTWe87";
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -266,6 +267,7 @@ const pageCopy = {
     headline: "Your wedding website, connected to every detail.",
     sub: "A live guest experience with a private manager panel behind it.",
     primary: "Begin your story",
+    meeting: "Reserve a meeting",
     demo: "Open live demo",
     demoNote: "Contact us and we will prepare a free personalized demo website in your style. The demo is only a preview and has no cost.",
     liveLabel: "Live connected demo",
@@ -282,6 +284,7 @@ const pageCopy = {
     headline: "Tu web de boda, conectada a cada detalle.",
     sub: "Una experiencia para invitados con un panel privado detras.",
     primary: "Comienza tu historia",
+    meeting: "Reservar una reunion",
     demo: "Abrir demo en vivo",
     demoNote: "Contactanos y prepararemos una demo web gratuita con tu estilo. La demo es solo una vista previa, no tiene coste.",
     liveLabel: "Demo en vivo conectada",
@@ -490,6 +493,9 @@ export function ProductShowcase({ onOpenOrder }: ProductShowcaseProps) {
             <Button onClick={onOpenOrder} className="whitespace-nowrap px-6 py-3 text-[0.82rem]">
               <span>{copy.primary}</span>
             </Button>
+            <a href={MEETING_URL} target="_blank" rel="noreferrer" className="product-hero__secondary">
+              {copy.meeting}
+            </a>
             <a href={DEMO_ORIGIN} target="_blank" rel="noreferrer" className="product-hero__secondary">
               {copy.demo}
             </a>
