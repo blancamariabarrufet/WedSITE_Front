@@ -58,7 +58,6 @@ function TableCard({
   labels: {
     seats: string;
     dropHere: string;
-    viewFullTable: string;
     viewEditTable: string;
   };
 }) {
@@ -67,84 +66,110 @@ function TableCard({
   const [name, setName] = useState(table.name);
   const pct = guests.length / table.capacity;
   const hasConflict = guests.some((g) => g.dietary && g.dietary.length > 0);
+  const isRound = table.shape === "round";
+
+  const shapeSize = isRound
+    ? { width: "210px", height: "210px", borderRadius: "50%" }
+    : { width: "240px", height: "150px", borderRadius: "14px" };
 
   return (
-    <div
-      ref={setNodeRef}
-      className="p-4 rounded-2xl flex-shrink-0 transition-all"
-      style={{
-        width: "200px",
-        background: isOver ? "var(--surface-container)" : "var(--surface-container-lowest)",
-        boxShadow: "var(--shadow-ambient)",
-        border: isOver ? "2px solid var(--primary)" : "2px solid transparent",
-      }}
-    >
-      <div className="flex items-start justify-between mb-2">
-        {editing ? (
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onBlur={() => { onRename(name); setEditing(false); }}
-            onKeyDown={(e) => { if (e.key === "Enter") { onRename(name); setEditing(false); } }}
-            className="text-sm font-medium bg-transparent outline-none border-b"
-            style={{ fontFamily: "var(--font-work-sans)", color: "var(--on-surface)", borderColor: "var(--primary)", width: "120px" }}
-            autoFocus
-          />
-        ) : (
-          <p
-            className="text-sm font-medium cursor-pointer"
-            style={{ fontFamily: "var(--font-newsreader)", color: "var(--on-surface)" }}
-            onDoubleClick={() => setEditing(true)}
-          >
-            {table.name}
-          </p>
-        )}
-        <div className="flex items-center gap-1">
+    <div className="flex-shrink-0 flex flex-col items-center" style={{ width: isRound ? "210px" : "240px" }}>
+      <div
+        ref={setNodeRef}
+        onClick={() => !editing && onOpen()}
+        className="relative flex flex-col items-center justify-center transition-all cursor-pointer"
+        style={{
+          ...shapeSize,
+          background: isOver ? "var(--surface-container)" : "var(--surface-container-lowest)",
+          boxShadow: "var(--shadow-ambient)",
+          border: isOver ? "2px solid var(--primary)" : "2px solid transparent",
+          padding: isRound ? "28px" : "16px",
+        }}
+      >
+        <div
+          className="absolute flex items-center gap-1"
+          style={{ top: isRound ? "14px" : "8px", right: isRound ? "14px" : "8px" }}
+          onClick={(e) => e.stopPropagation()}
+        >
           {hasConflict && (
             <AlertTriangle size={12} strokeWidth={1} style={{ color: "var(--primary)" }} />
           )}
-          <button onClick={onOpen} className="p-1 rounded hover:bg-[var(--surface-container-low)] transition-colors" style={{ color: "var(--on-surface-variant)" }} aria-label={labels.viewEditTable}>
+          <button
+            onClick={onOpen}
+            className="p-1 rounded hover:bg-[var(--surface-container-low)] transition-colors"
+            style={{ color: "var(--on-surface-variant)" }}
+            aria-label={labels.viewEditTable}
+          >
             <Pencil size={12} strokeWidth={1} />
           </button>
-          <button onClick={onRemove} className="p-1 rounded hover:bg-[var(--secondary-container)] transition-colors" style={{ color: "var(--on-surface-variant)" }}>
+          <button
+            onClick={onRemove}
+            className="p-1 rounded hover:bg-[var(--secondary-container)] transition-colors"
+            style={{ color: "var(--on-surface-variant)" }}
+          >
             <Trash2 size={12} strokeWidth={1} />
           </button>
         </div>
+
+        <div className="flex flex-col items-center text-center gap-2 px-2" onClick={(e) => editing && e.stopPropagation()}>
+          {editing ? (
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onBlur={() => { onRename(name); setEditing(false); }}
+              onKeyDown={(e) => { if (e.key === "Enter") { onRename(name); setEditing(false); } }}
+              onClick={(e) => e.stopPropagation()}
+              className="text-sm font-medium bg-transparent outline-none border-b text-center"
+              style={{ fontFamily: "var(--font-work-sans)", color: "var(--on-surface)", borderColor: "var(--primary)", width: "120px" }}
+              autoFocus
+            />
+          ) : (
+            <p
+              className="text-sm font-medium"
+              style={{ fontFamily: "var(--font-newsreader)", color: "var(--on-surface)" }}
+              onDoubleClick={(e) => { e.stopPropagation(); setEditing(true); }}
+            >
+              {table.name}
+            </p>
+          )}
+
+          <p
+            className="text-xs tabular-nums"
+            style={{ fontFamily: "var(--font-work-sans)", color: "var(--on-surface-variant)" }}
+          >
+            {guests.length} / {table.capacity} {labels.seats}
+          </p>
+
+          <div
+            className="h-1 rounded-full overflow-hidden"
+            style={{ width: isRound ? "110px" : "180px", background: "var(--surface-container-low)" }}
+          >
+            <div
+              className="h-full rounded-full transition-all"
+              style={{
+                width: `${Math.min(pct * 100, 100)}%`,
+                background: pct >= 1 ? "var(--secondary-container)" : "linear-gradient(90deg, var(--primary), var(--primary-container))",
+              }}
+            />
+          </div>
+        </div>
       </div>
 
-      <p className="text-xs mb-3" style={{ fontFamily: "var(--font-work-sans)", color: "var(--on-surface-variant)" }}>
-        {guests.length} / {table.capacity} {labels.seats}
-      </p>
-
-      <div
-        className="h-1 rounded-full mb-3 overflow-hidden"
-        style={{ background: "var(--surface-container-low)" }}
-      >
-        <div
-          className="h-full rounded-full transition-all"
-          style={{
-            width: `${Math.min(pct * 100, 100)}%`,
-            background: pct >= 1 ? "var(--secondary-container)" : "linear-gradient(90deg, var(--primary), var(--primary-container))",
-          }}
-        />
-      </div>
-
-      <button
-        onClick={onOpen}
-        className="w-full rounded-lg px-2 py-1.5 mb-3 text-xs transition-colors hover:bg-[var(--surface-container-low)]"
-        style={{ color: "var(--on-surface-variant)" }}
-      >
-        {labels.viewFullTable}
-      </button>
-
-      <div className="space-y-1 min-h-[40px] max-h-36 overflow-auto">
+      <div className="w-full mt-2 space-y-0.5 min-h-[32px] max-h-32 overflow-auto px-1">
         {guests.map((g) => (
-          <p key={g.id} className="text-xs px-1" style={{ fontFamily: "var(--font-work-sans)", color: "var(--on-surface)" }}>
+          <p
+            key={g.id}
+            className="text-xs truncate"
+            style={{ fontFamily: "var(--font-work-sans)", color: "var(--on-surface)" }}
+          >
             {g.first_name} {g.last_name}
           </p>
         ))}
         {guests.length === 0 && (
-          <p className="text-xs italic px-1" style={{ fontFamily: "var(--font-work-sans)", color: "var(--on-surface-variant)", opacity: 0.5 }}>
+          <p
+            className="text-xs italic text-center"
+            style={{ fontFamily: "var(--font-work-sans)", color: "var(--on-surface-variant)", opacity: 0.5 }}
+          >
             {labels.dropHere}
           </p>
         )}
@@ -304,7 +329,6 @@ export default function SeatingPage() {
                     labels={{
                       seats: t.seating.seats,
                       dropHere: t.seating.dropHere,
-                      viewFullTable: t.seating.viewFullTable,
                       viewEditTable: t.seating.viewEditTable,
                     }}
                   />

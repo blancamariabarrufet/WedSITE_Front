@@ -140,7 +140,12 @@ export default function LoginPage() {
     setError(null);
     setDismissStatus(true);
 
-    const result = await login(username, password);
+    const result = await login(username, password).catch((loginError) => ({
+      error:
+        loginError instanceof Error
+          ? loginError.message
+          : text.googleError,
+    }));
 
     if ("error" in result) {
       setError(result.error);

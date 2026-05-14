@@ -362,6 +362,55 @@ textarea {
   }
 }
 
+.experience-panel__demo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+  padding-top: clamp(1.4rem, 3vw, 2rem);
+}
+
+.experience-demo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid oklch(0.62 0.018 72 / 0.34);
+  border-radius: var(--radius-full);
+  padding: 0.68rem 1.35rem;
+  background: oklch(0.996 0.004 82 / 0.68);
+  font-family: var(--font-serif);
+  font-size: clamp(0.88rem, 1.15vw, 0.98rem);
+  font-style: italic;
+  line-height: 1.25;
+  color: oklch(0.36 0.035 66 / 0.82);
+  box-shadow: 0 6px 18px oklch(0.33 0.025 66 / 0.025);
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.experience-demo-btn:hover {
+  border-color: oklch(0.43 0.035 66 / 0.46);
+  background: oklch(0.996 0.004 82 / 0.92);
+  box-shadow: 0 10px 24px oklch(0.33 0.025 66 / 0.05);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.experience-demo-btn__arrow {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-style: normal;
+  line-height: 1;
+}
+
+.experience-demo-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
 .hero-actions {
   max-width: 44rem;
 }

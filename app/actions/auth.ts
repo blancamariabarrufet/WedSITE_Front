@@ -53,7 +53,17 @@ export async function login(username: string, password: string): Promise<ActionR
   }
 
   // Regular user check
-  const supabase = createAdminClient();
+  let supabase: ReturnType<typeof createAdminClient>;
+  try {
+    supabase = createAdminClient();
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error
+          ? error.message
+          : "Supabase is not configured for this environment.",
+    };
+  }
   let { data: user } = await supabase
     .from("panel_users")
     .select("*")

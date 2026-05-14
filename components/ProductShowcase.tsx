@@ -22,8 +22,8 @@ import {
 import { Button } from "@/components/ui/Button";
 import { useLanguage, type Locale } from "@/lib/i18n";
 
-const DEMO_ORIGIN = "https://demo.tudiadeblanco.com";
 const MEETING_URL = "https://calendar.app.google/76LAvzURpLJiTWe87";
+const DEMO_ORIGIN = "https://demo.tudiadeblanco.com";
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -268,9 +268,6 @@ const pageCopy = {
     sub: "A live guest experience with a private manager panel behind it.",
     primary: "Begin your story",
     meeting: "Reserve a meeting",
-    demo: "Open live demo",
-    demoNote: "Contact us and we will prepare a free personalized demo website in your style. The demo is only a preview and has no cost.",
-    liveLabel: "Live connected demo",
     differenceEyebrow: "WHY IT FEELS DIFFERENT",
     differenceTitle: "One place for the page, the guests, and the details.",
     differenceBody:
@@ -278,6 +275,9 @@ const pageCopy = {
     closingTitle: "A website your guests understand, with a panel you can actually use.",
     closingSub: "Start with the essentials, then add the services that fit your wedding.",
     closingSecondary: "Try the AI",
+    guestTitle: "Your guests' experience",
+    coupleTitle: "The couple's experience",
+    viewDemo: "View demo",
   },
   es: {
     eyebrow: "EL PRODUCTO",
@@ -285,9 +285,6 @@ const pageCopy = {
     sub: "Una experiencia para invitados con un panel privado detras.",
     primary: "Comienza tu historia",
     meeting: "Reservar una reunion",
-    demo: "Abrir demo en vivo",
-    demoNote: "Contactanos y prepararemos una demo web gratuita con tu estilo. La demo es solo una vista previa, no tiene coste.",
-    liveLabel: "Demo en vivo conectada",
     differenceEyebrow: "POR QUE ES DIFERENTE",
     differenceTitle: "Una sola experiencia para la web, los invitados y los detalles.",
     differenceBody:
@@ -295,8 +292,49 @@ const pageCopy = {
     closingTitle: "Una web que tus invitados entienden, con un panel que puedes usar de verdad.",
     closingSub: "Empieza con lo esencial y anade los servicios que encajan con tu boda.",
     closingSecondary: "Probar la IA",
+    guestTitle: "La experiencia de tus invitados",
+    coupleTitle: "La experiencia de los novios",
+    viewDemo: "Ver demo",
   },
 } satisfies Record<Locale, Record<string, string>>;
+
+const guestFeatures = {
+  en: [
+    "Custom-made invitation matching your wedding aesthetic",
+    "Access to all wedding information along with the latest news in real time",
+    "AI assistant with custom tone and data to answer all guest questions",
+    "Form to register attendance confirmation and notes to keep in mind",
+    "Photo well to share all wedding photos taken by guests (coming soon)",
+  ],
+  es: [
+    "Invitación hecha a medida con la estética de tu boda",
+    "Acceso a toda la información de la boda junto a las últimas noticias en tiempo real",
+    "Asistente de IA con tono y datos a medida para resolver todas las dudas de los invitados",
+    "Formulario para registrar confirmación de asistencia y notas a tener en cuenta",
+    "Pozo donde compartir todas las fotos de la boda sacadas por los invitados (pronto)",
+  ],
+} satisfies Record<Locale, string[]>;
+
+const coupleFeatures = {
+  en: [
+    "Control panel for all guests with attendance confirmations, intolerances/allergies, number of companions...",
+    "Budget control panel",
+    "Interactive table planner for easy organization",
+    "Wedding document manager",
+    "AI assistant to quickly query all your documents or guest information",
+    "AI assistant configurator for your guests",
+    "News manager for guests",
+  ],
+  es: [
+    "Panel de control de todos los invitados con sus confirmaciones de asistencia, intolerancias/alergias, cantidad de acompañantes...",
+    "Panel de control de presupuestos",
+    "Gestor interactivo de mesas para una organización sencilla",
+    "Gestor de documentos de la boda",
+    "Asistente de IA para poder consultar todos tus documentos o información sobre los invitados rápidamente",
+    "Configurador del asistente de IA para tus invitados",
+    "Gestor de noticias para los invitados",
+  ],
+} satisfies Record<Locale, string[]>;
 
 const differencePoints = {
   en: [
@@ -329,22 +367,6 @@ const differencePoints = {
   ],
 } satisfies Record<Locale, { title: string; body: string }[]>;
 
-type BrowserFrameProps = {
-  route: string;
-  title: string;
-};
-
-function BrowserFrame({ route, title }: BrowserFrameProps) {
-  const src = `${DEMO_ORIGIN}${route}`;
-
-  return (
-    <div className="browser-frame product-demo-frame">
-      <div className="browser-frame__body">
-        <iframe src={src} title={title} className="browser-frame__iframe" loading="lazy" />
-      </div>
-    </div>
-  );
-}
 
 type ProductShowcaseProps = {
   onOpenOrder: () => void;
@@ -496,18 +518,56 @@ export function ProductShowcase({ onOpenOrder }: ProductShowcaseProps) {
             <a href={MEETING_URL} target="_blank" rel="noreferrer" className="product-hero__secondary">
               {copy.meeting}
             </a>
-            <a href={DEMO_ORIGIN} target="_blank" rel="noreferrer" className="product-hero__secondary">
-              {copy.demo}
-            </a>
           </div>
-          <p className="product-demo-note">{copy.demoNote}</p>
         </div>
-        <div className="product-hero__stage">
-          <div className="product-hero__stage-label">
-            <span />
-            {copy.liveLabel}
+      </section>
+
+      <section className="experience-section" aria-label="Experiencia">
+        <div className="experience-section__inner">
+          <div className="experience-panels">
+            {/* Guest experience */}
+            <div className="experience-panel">
+              <div className="experience-panel__top">
+                <span>01</span>
+              </div>
+              <h3>{copy.guestTitle}</h3>
+              <ul>
+                {guestFeatures[locale].map((feature) => (
+                  <li key={feature}>{feature}</li>
+                ))}
+              </ul>
+              <div className="experience-panel__demo-wrap">
+                <a
+                  href={DEMO_ORIGIN}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="experience-demo-btn"
+                >
+                  <span>{copy.viewDemo}</span>
+                  <span className="experience-demo-btn__arrow">→</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Couple experience */}
+            <div className="experience-panel">
+              <div className="experience-panel__top">
+                <span>02</span>
+              </div>
+              <h3>{copy.coupleTitle}</h3>
+              <ul>
+                {coupleFeatures[locale].map((feature) => (
+                  <li key={feature}>{feature}</li>
+                ))}
+              </ul>
+              <div className="experience-panel__demo-wrap">
+                <a href="/demo-login" className="experience-demo-btn">
+                  <span>{copy.viewDemo}</span>
+                  <span className="experience-demo-btn__arrow">→</span>
+                </a>
+              </div>
+            </div>
           </div>
-          <BrowserFrame route="#" title="Tu dia de blanco live wedding demo" />
         </div>
       </section>
 

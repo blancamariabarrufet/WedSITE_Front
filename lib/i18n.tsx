@@ -99,18 +99,29 @@ const translations: Record<Locale, Record<string, string>> = {
     "features.heading": "Two experiences, one wedding.",
     "features.sub": "",
     "features.experienceLabel": "Two experiences: the guest and the couple",
+    "features.viewDemo": "View demo",
     "features.coupleKicker": "For the couple",
-    "features.coupleTitle": "Preparation without the scattered tools.",
-    "features.couplePoint1": "Private manager panel for the details behind the day",
-    "features.couplePoint2": "RSVPs, guest list, dietary notes and seating in one place",
-    "features.couplePoint3": "News, updates and practical changes published calmly",
-    "features.couplePoint4": "A wedding website designed from your story, not a template",
+    "features.coupleTitle": "The couple's experience",
+    "features.couplePoint1":
+      "Control panel for all guests with attendance confirmations, intolerances/allergies, number of companions...",
+    "features.couplePoint2": "Budget control panel",
+    "features.couplePoint3": "Interactive table planner for easy organization",
+    "features.couplePoint4": "Wedding document manager",
+    "features.couplePoint5":
+      "AI assistant to quickly query all your documents or guest information",
+    "features.couplePoint6": "AI assistant configurator for your guests",
+    "features.couplePoint7": "News manager for guests",
     "features.guestKicker": "For the guests",
-    "features.guestTitle": "A clear experience from invitation to arrival.",
-    "features.guestPoint1": "Mobile-first wedding information that is easy to scan",
-    "features.guestPoint2": "RSVP in a few steps with the details you need collected",
-    "features.guestPoint3": "Schedule, venues, dress code and directions in one place",
-    "features.guestPoint4": "The Invisible Host answers questions with your approved details",
+    "features.guestTitle": "Your guests' experience",
+    "features.guestPoint1": "Custom-made invitation matching your wedding aesthetic",
+    "features.guestPoint2":
+      "Access to all wedding information along with the latest news in real time",
+    "features.guestPoint3":
+      "AI assistant with custom tone and data to answer all guest questions",
+    "features.guestPoint4":
+      "Form to register attendance confirmation and notes to keep in mind",
+    "features.guestPoint5":
+      "Photo well to share all wedding photos taken by guests (coming soon)",
     "features.hostLabel": "The Invisible Host",
     "features.aiTitle": "Personal assistant",
     "features.aiBody":
@@ -359,18 +370,30 @@ const translations: Record<Locale, Record<string, string>> = {
     "features.heading": "Dos experiencias, una misma boda.",
     "features.sub": "",
     "features.experienceLabel": "Dos experiencias: invitados y pareja",
+    "features.viewDemo": "Ver demo",
     "features.coupleKicker": "Para la pareja",
-    "features.coupleTitle": "Preparacion sin herramientas dispersas.",
-    "features.couplePoint1": "Panel privado para gestionar los detalles del dia",
-    "features.couplePoint2": "RSVPs, invitados, dietas y mesas en un solo lugar",
-    "features.couplePoint3": "Noticias, cambios y actualizaciones publicados con calma",
-    "features.couplePoint4": "Una web diseñada desde vuestra historia, no desde una plantilla",
+    "features.coupleTitle": "La experiencia de los novios",
+    "features.couplePoint1":
+      "Panel de control de todos los invitados con sus confirmaciones de asistencia, intolerancias/alergias, cantidad de acompañantes...",
+    "features.couplePoint2": "Panel de control de presupuestos",
+    "features.couplePoint3":
+      "Gestor interactivo de mesas para una organización sencilla",
+    "features.couplePoint4": "Gestor de documentos de la boda",
+    "features.couplePoint5":
+      "Asistente de IA para poder consultar todos tus documentos o información sobre los invitados rápidamente",
+    "features.couplePoint6": "Configurador del asistente de IA para tus invitados",
+    "features.couplePoint7": "Gestor de noticias para los invitados",
     "features.guestKicker": "Para los invitados",
-    "features.guestTitle": "Una experiencia clara desde la invitacion hasta la llegada.",
-    "features.guestPoint1": "Informacion de boda mobile-first y facil de consultar",
-    "features.guestPoint2": "RSVP en pocos pasos con los datos necesarios recogidos",
-    "features.guestPoint3": "Horario, espacios, dress code e indicaciones en un solo lugar",
-    "features.guestPoint4": "The Invisible Host responde preguntas con los detalles aprobados",
+    "features.guestTitle": "La experiencia de tus invitados",
+    "features.guestPoint1": "Invitación hecha a medida con la estética de tu boda",
+    "features.guestPoint2":
+      "Acceso a toda la información de la boda junto a las últimas noticias en tiempo real",
+    "features.guestPoint3":
+      "Asistente de IA con tono y datos a medida para resolver todas las dudas de los invitados",
+    "features.guestPoint4":
+      "Formulario para registrar confirmación de asistencia y notas a tener en cuenta",
+    "features.guestPoint5":
+      "Pozo donde compartir todas las fotos de la boda sacadas por los invitados (pronto)",
     "features.hostLabel": "El Anfitri\u00F3n Invisible",
     "features.aiTitle": "Asistente Personal",
     "features.aiBody":
